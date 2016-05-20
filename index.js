@@ -247,12 +247,17 @@ CASAuthentication.prototype._login = function(req, res, next) {
     // query parameter, use that. Otherwise, just use the URL from the request.
     req.session.cas_return_to = req.query.returnTo || url.parse(req.originalUrl).path;
 
-    // Set up the query parameters.
-    var query = {
-        service: this.service_url + url.parse(req.originalUrl).pathname,
-        renew: this.renew
-    };
-
+	if (this.renew) {
+		var query = {
+			service: this.service_url + url.parse(req.url).pathname,
+			renew: this.renew
+		};
+	} else {
+		var query = {
+			service: this.service_url + url.parse(req.url).pathname
+		};
+	}
+    
     // Redirect to the CAS login.
     res.redirect( this.cas_url + url.format({
         pathname: '/login',
